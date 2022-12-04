@@ -1,0 +1,68 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="promocion">
+    
+    <select id="getAllPromociones" resultType="pojos.Promocion">
+        SELECT * FROM promociones;
+    </select>
+    
+    <insert id="registrar" parameterType="pojos.Promocion">
+        INSERT INTO promociones(nombre, descripcion, fechaInicio, fechaFinal, restriccion, idTipoPromocion, porcentajeDescuento, costoPromocion, idCategoria, idEstatus, idEmpresa)
+        VALUES (#{nombre},#{descripcion},#{fechaInicio},#{fechaFinal},#{restriccion},#{idTipoPromocion},#{porcentajeDescuento},#{costoPromocion},#{idCategoria},#{idEstatus},#{idEmpresa})
+    </insert>
+    
+    <update id="modificar" parameterType="pojos.Promocion">
+        UPDATE promociones SET nombre=#{nombre}, descripcion=#{descripcion}, restriccion=#{restriccion}, idTipoPromocion=#{idTipoPromocion}, porcentajeDescuento=#{porcentajeDescuento}, costoPromocion=#{costoPromocion}, idCategoria=#{idCategoria}, idEstatus=#{idEstatus}, idEmpresa=#{idEmpresa}
+        WHERE idPromocion = #{idPromocion}
+    </update>
+    
+    <delete id="eliminar" parameterType="pojos.Promocion">
+        DELETE FROM promociones
+        WHERE idPromocion = #{idPromocion}
+    </delete>
+    
+    <select id="buscar" resultType="pojos.Promocion">
+        SELECT * FROM promociones 
+        WHERE nombre=#{datoBuscar} OR fechaInicio=#{datoBuscar} OR fechaFinal=#{datoBuscar} 
+    </select>
+    
+    <update id="eliminar_estatus" parameterType="int">
+        UPDATE promociones SET idEstatus=102
+        WHERE idPromocion = #{idPromocion}
+        
+    </update>
+    
+    <update id="subirFoto" parameterType="map">
+        UPDATE promociones SET foto = #{foto}
+        WHERE idPromocion = #{idPromocion}
+        
+    </update>
+    
+    <select id="cargarFoto" resultType="pojos.Promocion" parameterType="int">
+        SELECT idPromocion, nombre, apellidoPaterno, apellidoMaterno, TO_BASE64(foto) as 'foto'
+        FROM promociones
+        WHERE idPromocion = #{idPromocion}
+        
+    </select>
+    
+    <select id="detallePromocion" resultType="pojos.Promocion">
+        SELECT promociones.foto, promociones.nombre, promociones.descripcion, DATE_FORMAT(fechaInicio, "%d-%m-%Y") as fechaInicio, DATE_FORMAT(fechaFinal, "%d-%m-%Y") as fechaFinal, promociones.restriccion, promociones.idTipoPromocion, catalogo.nombre as 'nombreTipoPromocion'
+        FROM promociones
+        INNER JOIN catalogo
+        on promociones.idTipoPromocion = catalogo.IdCatalogo;
+    </select>
+    
+    <select id="listaPromociones" resultType="pojos.Promocion">
+        SELECT promociones.nombre, DATE_FORMAT(fechaInicio, "%d-%m-%Y") as fechaInicio, DATE_FORMAT(fechaFinal, "%d-%m-%Y") as fechaFinal, promociones.idEmpresa, empresas.nombre as 'nombreEmpresa', promociones.idTipoPromocion, catalogo.nombre as 'nombreTipoPromocion'
+        FROM promociones
+        INNER JOIN catalogo
+        INNER JOIN empresas
+        on promociones.idEmpresa = empresas.idEmpresa
+        and promociones.idTipoPromocion = catalogo.IdCatalogo
+        WHERE #{fechaActual} BETWEEN fechaInicio and fechaFinal;
+    </select>
+    
+</mapper>

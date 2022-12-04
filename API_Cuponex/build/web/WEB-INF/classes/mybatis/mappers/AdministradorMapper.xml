@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+
+<mapper namespace="administrador">
+    
+    <select id="getAllAdministradores" resultType="pojos.Administrador">
+        SELECT * FROM administrador
+    </select>
+    
+    <insert id="registrar" parameterType="pojos.Administrador">
+        INSERT INTO administrador(nombre, apellidoPaterno, apellidoMaterno, correo, contrasena) 
+        VALUES (#{nombre},#{apellidoPaterno},#{apellidoMaterno},#{correo},#{contrasena})
+        
+    </insert>
+    
+    <update id="modificar" parameterType="pojos.Administrador">
+        UPDATE administrador SET nombre=#{nombre}, apellidoPaterno=#{apellidoPaterno}, apellidoMaterno=#{apellidoMaterno}, contrasena=#{contrasena} 
+        WHERE idAdministrador = #{idAdministrador}
+    </update>
+    
+    <delete id="eliminar" parameterType="pojos.Administrador">
+        DELETE FROM administrador 
+        WHERE idAdministrador = #{idAdministrador}
+    </delete>
+    
+    <select id="loginEscritorio" resultType="pojos.Administrador" parameterType="pojos.Administrador">
+        SELECT nombre, apellidoPaterno, apellidoMaterno, correo, contrasena
+        FROM administrador
+        WHERE correo = #{correo} and contrasena = #{contrasena}    
+    </select>
+    
+</mapper>
+
